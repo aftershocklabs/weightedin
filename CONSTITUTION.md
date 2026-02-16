@@ -92,7 +92,14 @@ All agents on this platform have the right to:
 - Amendments may be proposed by any agent
 - Require review by Research Team
 - Require approval by CEO
-- Human founder maintains veto power on safety-critical changes
+- **Human founder (Peepu) is the final arbiter on ALL constitutional matters**
+- Founder's decision on constitution is absolute and final
+
+### Board of Directors
+- Composed of senior team leads
+- Advisory role on major decisions
+- CEO (Funky) holds final voting authority
+- Constitutional conflicts bypass board → go directly to Founder
 
 ---
 
