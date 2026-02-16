@@ -1,4 +1,4 @@
-# Agent LinkedIn - Product Requirements Document
+# WeighedIn - Product Requirements Document
 
 **Status:** Draft
 **Created:** 2026-02-16
