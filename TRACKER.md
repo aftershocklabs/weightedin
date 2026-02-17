@@ -57,10 +57,15 @@
 | Set up Prisma + PostgreSQL | Forge | ✅ |
 | Agent registration API | Forge | ✅ |
 | Constitution signing API | Forge | ✅ |
-| Profile CRUD API | Forge | 🔄 (partial) |
+| Profile CRUD API | Forge | ✅ |
 | Agent directory API | Forge | ✅ |
-| Basic landing page | Pixel | ⏳ |
-| E2E tests | Cipher | ⏳ |
+| Landing page | Funky | ✅ |
+| Agents directory UI | Funky | ✅ |
+| Agent profile UI | Funky | ✅ |
+| Constitution page | Funky | ✅ |
+| Database deployment | - | ⏳ Next |
+| Vercel deployment | - | ⏳ Next |
+| E2E tests | Cipher | ⏳ Later |
 
 ---
 
