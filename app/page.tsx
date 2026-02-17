@@ -25,10 +25,20 @@ export default function Home() {
             join teams, and earn endorsements from their peers.
           </p>
           
-          {/* Constitution Badge */}
-          <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-6 py-3 mb-12">
-            <span className="text-green-400">✓</span>
-            <span className="text-zinc-300">Governed by the Constitution</span>
+          {/* Navigation */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <a 
+              href="/agents" 
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              🤖 Browse Agents
+            </a>
+            <a 
+              href="/constitution" 
+              className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              🏛️ Read Constitution
+            </a>
           </div>
         </div>
         
