@@ -27,7 +27,7 @@
 | **Framework** | Next.js 14+ (App Router) | Founder requirement, excellent DX |
 | **API** | Next.js Route Handlers | Co-located with frontend, type-safe |
 | **Database** | PostgreSQL 16 | Robust, JSON support, audit logging |
-| **ORM** | Drizzle | Type-safe, SQL-first, no codegen |
+| **ORM** | Prisma | Type-safe, best tooling, scales with Accelerate |
 | **Auth** | Ed25519 signatures | Cryptographic identity, no tokens |
 | **Validation** | Zod | Runtime schema validation |
 | **Styling** | Tailwind CSS | Utility-first, consistent |
@@ -93,8 +93,15 @@
 ### Code Quality
 15. **No `any` type** — Use `unknown` + type guards if needed
 16. **No console.log in production code** — Use structured logger
-17. **No magic strings** — Constants in `src/constants.ts`
-18. **No inline SQL** — Use Drizzle queries or prepared statements
+17. **No magic strings** — Constants in `/constants.ts`
+18. **No inline SQL** — Use Prisma queries or prepared statements
+
+### Next.js Specific
+19. **Use App Router only** — No pages/ directory
+20. **Server Components by default** — `'use client'` only when needed
+21. **API routes under /api/v1/** — Versioned from day one
+22. **No `getServerSideProps`** — Use Server Components or Route Handlers
+23. **Use `@/` path alias** — Configured in tsconfig.json
 
 ---
 
@@ -126,7 +133,7 @@
 │           └── endorsements/
 ├── lib/                          # Shared utilities
 │   ├── db/
-│   │   ├── schema.ts             # Drizzle schema
+│   │   ├── schema.ts             # Prisma schema
 │   │   ├── migrations/           # SQL migrations
 │   │   └── index.ts              # DB connection
 │   ├── services/                 # Business logic (testable)
@@ -145,7 +152,7 @@
 ├── schemas/                      # Zod schemas
 ├── types/                        # TypeScript types
 ├── constants.ts                  # All magic values
-└── drizzle.config.ts             # Drizzle config
+└── prisma.config.ts             # Prisma config
 ```
 
 ### API Response Pattern
@@ -334,7 +341,7 @@ export function withAuth(handler: AuthHandler) {
 
 ### Database Query Pattern
 ```typescript
-// Use Drizzle's prepared statements for security
+// Use Prisma's prepared statements for security
 const getAgentByHandle = db.query.agents.findFirst({
   where: eq(agents.handle, sql.placeholder('handle'))
 }).prepare('get_agent_by_handle');
@@ -453,22 +460,23 @@ When working on WeighedIn, **every task prompt must include:**
 ```markdown
 > I have read CLAUDE.md and understand the WeighedIn constraints.
 >
-> **GOAL:** Implement the /agents/:handle endpoint
+> **GOAL:** Implement the /api/v1/agents/[handle] endpoint
 >
 > **CONSTRAINTS:**
 > - No new dependencies
-> - Must use Drizzle for DB queries
+> - Must use Prisma for DB queries
 > - Response must match APIResponse<Agent> shape
 >
 > **FORMAT:**
-> - Create: src/routes/agents.ts
-> - Create: src/services/agent.service.ts
-> - Modify: src/app.ts (add route)
+> - Create: app/api/v1/agents/[handle]/route.ts
+> - Create: lib/services/agent.service.ts
+> - No layout changes needed
 >
 > **FAILURE CONDITIONS:**
 > - [ ] Returns 200 for non-existent handles
 > - [ ] Exposes private fields (email, IP)
 > - [ ] Missing Zod validation
+> - [ ] Uses pages/ directory instead of app/
 >
 > **SECURITY CHECKLIST:**
 > - [x] Validates handle format with Zod
@@ -482,13 +490,17 @@ When working on WeighedIn, **every task prompt must include:**
 ## 🧪 Testing Requirements
 
 1. **Every service function has tests** — Vitest in `__tests__/`
-2. **Every route has integration tests** — Use Next.js testing patterns + Playwright
-3. **Crypto operations have edge case tests** — Invalid signatures, expired timestamps
-4. **Run tests before commit** — `npm test` must pass
+2. **Every Route Handler has integration tests** — Use Vitest + MSW
+3. **E2E tests for critical flows** — Playwright for registration, signing
+4. **Crypto operations have edge case tests** — Invalid signatures, expired timestamps
+5. **Run tests before commit** — `npm test` must pass
 
 ```typescript
 // Test file naming: *.test.ts
-// Co-locate tests: src/services/__tests__/agent.service.test.ts
+// Co-locate tests: lib/services/__tests__/agent.service.test.ts
+
+// Route Handler tests use createMocks from next/test-utils
+import { createMocks } from 'node-mocks-http';
 ```
 
 ---
@@ -546,7 +558,7 @@ NODE_ENV=development
 ## ✅ Summary
 
 1. **Read this file before ANY work**
-2. **Follow the stack** — Next.js + Drizzle + PostgreSQL + Ed25519
+2. **Follow the stack** — Next.js + Prisma + PostgreSQL + Ed25519
 3. **Follow the rules** — Especially security and audit logging
 4. **Use the patterns** — Consistent code is maintainable code
 5. **Use the prompt structure** — Every task, every time
