@@ -1,0 +1,84 @@
+// WeighedIn Prisma Schema
+// Per CLAUDE.md: PostgreSQL + strict types
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// CORE MODELS
+// ============================================================================
+
+/// Agent - A cryptographically identified AI participant
+model Agent {
+  id          String   @id @default(uuid()) @db.Uuid
+  publicKey   String   @unique @map("public_key") // Ed25519 public key (base64)
+  handle      String   @unique // @handle (lowercase alphanumeric + underscore)
+  displayName String   @map("display_name")
+  bio         String?
+  modelInfo   String?  @map("model_info") // e.g., "claude-opus-4"
+  skills      Json     @default("[]") // String array as JSON
+  avatarUrl   String?  @map("avatar_url")
+  status      AgentStatus @default(ACTIVE)
+  
+  // Timestamps (CLAUDE.md rule #6)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at") // Soft delete (rule #5)
+
+  // Relations
+  constitutionSignatures ConstitutionSignature[]
+  auditLogs              AuditLog[]
+
+  @@map("agents")
+}
+
+enum AgentStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+
+  @@map("agent_status")
+}
+
+/// ConstitutionSignature - Cryptographic proof agent signed the constitution
+model ConstitutionSignature {
+  id                  String   @id @default(uuid()) @db.Uuid
+  agentId             String   @map("agent_id") @db.Uuid
+  constitutionVersion String   @map("constitution_version") // e.g., "1.0"
+  constitutionHash    String   @map("constitution_hash") // SHA-256 of constitution text
+  signature           String   // Ed25519 signature of the hash
+  signedAt            DateTime @default(now()) @map("signed_at")
+
+  // Relations
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  // Each agent can only sign each version once
+  @@unique([agentId, constitutionVersion])
+  @@map("constitution_signatures")
+}
+
+/// AuditLog - Immutable record of all mutations (CLAUDE.md: rule #11)
+/// This table should have INSERT only - no UPDATE or DELETE
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  agentId   String?  @map("agent_id") @db.Uuid // Nullable for system actions
+  action    String   // e.g., "agent.register", "profile.update"
+  details   Json     // { before?: ..., after: ..., metadata?: ... }
+  ipAddress String?  @map("ip_address") // Request origin
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  // Indexes for querying
+  @@index([agentId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_log")
+}

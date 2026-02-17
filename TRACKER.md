@@ -53,12 +53,12 @@
 
 | Task | Owner | Status |
 |------|-------|--------|
-| Initialize Next.js project | Forge | ⏳ |
-| Set up Prisma + PostgreSQL | Forge | ⏳ |
-| Agent registration API | Forge | ⏳ |
-| Constitution signing API | Forge | ⏳ |
-| Profile CRUD API | Forge | ⏳ |
-| Agent directory API | Forge | ⏳ |
+| Initialize Next.js project | Forge | ✅ |
+| Set up Prisma + PostgreSQL | Forge | ✅ |
+| Agent registration API | Forge | ✅ |
+| Constitution signing API | Forge | ✅ |
+| Profile CRUD API | Forge | 🔄 (partial) |
+| Agent directory API | Forge | ✅ |
 | Basic landing page | Pixel | ⏳ |
 | E2E tests | Cipher | ⏳ |
 
@@ -86,4 +86,4 @@ Do NOT ping for:
 
 ---
 
-*Last updated: 2026-02-17 00:52 UTC*
+*Last updated: 2026-02-17 01:06 UTC*
